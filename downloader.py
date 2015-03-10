@@ -43,20 +43,26 @@ def parse_segment(bucket, segment):
 
     if not os.path.exists(segment):
         os.makedirs(segment)
-    for _file in stats['arc']:
+
+    for _file in stats['textdata']:
         print _file
         bucket.get_key(_file).get_contents_to_filename('./{}/{}'.format(segment,
                                                                         _file.split('/')[-1]))
 
+def tmp(a1, a2):
+    print a1, a2
 
+def process_segments(bucket, segments):
+    for segment in segments:
+        parse_segment(bucket, segment)
+    print >> sys.stderr, "Finished."
 
 def main():
     """ main """
     bucket = get_cc_bucket()
     segments = get_segments(bucket)
+    process_segments(bucket, segments[3:4])
     print >> sys.stderr, 'Number of segments:', len(segments)
-    parse_segment(bucket, segments[0])
-    print >> sys.stderr, "Finished."
 
 
 if __name__ == '__main__':
