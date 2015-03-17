@@ -60,22 +60,17 @@ def parse_segment(segment):
 
     input_queue = mp.Queue()
 
-    c = 0
-    for i in stats['metadata']:
-        input_queue.put(i)
-        c += 1
-        # if c == 10:
-            # break
-
+    # for i in stats['metadata']:
+        # input_queue.put(i)
 
     for i in stats['textdata']:
         input_queue.put(i)
 
-    for i in range(5):
+    for i in range(6):
         input_queue.put('DONE')
 
     processes = [mp.Process(target=download_files, args=(segment, input_queue,)) for i in
-                 range(5)]
+                 range(6)]
     for p in processes:
         p.start()
 
@@ -103,7 +98,7 @@ def main():
     """ main """
     bucket = get_cc_bucket()
     segments = get_segments(bucket)
-    process_segments(bucket, segments)
+    process_segments(bucket, segments[:1])
     print >> sys.stderr, 'Number of segments:', len(segments)
 
 
