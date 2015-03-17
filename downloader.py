@@ -32,17 +32,6 @@ def get_list(bucket, segment):
                        delimiter="/")
 
 
-def tmppp(data):
-    try:
-        bucket = data[0]
-        _file = data[1]
-
-        filename = './{}/{}'.format('aaa', _file.split('/')[-1])
-        bucket.get_key(_file).get_contents_to_filename(filename)
-    except Exception:
-        print 'BLAD'
-
-
 def get_filenames(segment):
     stats = {'arc': [], 'metadata': [], 'textdata': []}
 
@@ -71,11 +60,19 @@ def parse_segment(segment):
 
     input_queue = mp.Queue()
 
+    c = 0
     for i in stats['metadata']:
         input_queue.put(i)
+        c += 1
+        # if c == 10:
+            # break
+
 
     for i in stats['textdata']:
         input_queue.put(i)
+
+    for i in range(5):
+        input_queue.put('DONE')
 
     processes = [mp.Process(target=download_files, args=(segment, input_queue,)) for i in
                  range(5)]
@@ -98,7 +95,7 @@ def download_files(segment, queue):
 
 def process_segments(buckets, segments):
     for segment in segments:
-        parse_segment(buckets, segment)
+        parse_segment(segment)
     print >> sys.stderr, "Finished."
 
 
