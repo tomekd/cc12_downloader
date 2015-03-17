@@ -43,11 +43,12 @@ def tmppp(data):
         print 'BLAD'
 
 
-def parse_segment(buckets, segment):
-    print >> sys.stderr, "Start processing segment: {}".format(segment)
-    print "{}/segment/{}".format(CC_PREFIX, segment)
+def get_filenames(segment):
     stats = {'arc': [], 'metadata': [], 'textdata': []}
-    for key in islice(get_list(buckets[0], segment), None):
+
+    bucket = get_cc_bucket()
+
+    for key in islice(get_list(bucket, segment), None):
         name = key.name.encode('utf-8').split('/')[-1]
         if name.endswith('arc.gz'):
             stats['arc'].append(key.name.encode('utf-8'))
@@ -55,6 +56,13 @@ def parse_segment(buckets, segment):
             stats['metadata'].append(key.name.encode('utf-8'))
         elif name.startswith('textData'):
             stats['textdata'].append(key.name.encode('utf-8'))
+    return stats
+
+
+def parse_segment(segment):
+    print >> sys.stderr, "Start processing segment: {}".format(segment)
+    print "{}/segment/{}".format(CC_PREFIX, segment)
+    stats = get_filenames(segment)
     for k, v in stats.items():
         print k, len(v)
 
@@ -62,6 +70,7 @@ def parse_segment(buckets, segment):
         os.makedirs(segment)
 
     input_queue = mp.Queue()
+
     for i in stats['metadata']:
         input_queue.put(i)
 
@@ -95,11 +104,9 @@ def process_segments(buckets, segments):
 
 def main():
     """ main """
-    print '>>>>'
-    buckets = [get_cc_bucket() for i in range(5)]
-    print '>>>>'
-    segments = get_segments(buckets[0])
-    process_segments(buckets, segments[:4])
+    bucket = get_cc_bucket()
+    segments = get_segments(bucket)
+    process_segments(bucket, segments)
     print >> sys.stderr, 'Number of segments:', len(segments)
 
 
