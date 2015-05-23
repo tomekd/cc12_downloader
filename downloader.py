@@ -5,6 +5,7 @@
 Common Crawl 2012 Downloader
 """
 
+import glob
 import boto
 import sys
 import os
@@ -118,12 +119,44 @@ def process_segments(segments, data_type):
     print >> sys.stderr, "Finished."
 
 
+def find_files():
+    """ Find existing files. """
+    files = glob.glob('./*/textData-*')
+    downloaded_segments = set([item.split(r'/')[1] for item in files])
+    segments = get_segments()
+    untouched_segments = set(segments) - downloaded_segments
+
+    print downloaded_segments
+
+    data_type = ['textdata']
+    process_segments(untouched_segments, data_type)
+
+    for seg in downloaded_segments:
+        all_files = set([item.split('/')[-1] for item in get_filenames(seg)['textdata']])
+        print files
+
+
+def resume():
+    """ Resume downloading. """
+    find_files()
+
+
 def main():
     """ main """
-    parser = argparse.ArgumentError
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--resume', action="store_true")
+    args = parser.parse_args()
+
+    if args.resume:
+        print 'Resuming'
+        resume()
+        exit()
+    else:
+        print 'Starting'
+
     segments = get_segments()
     data_type = ['textdata']
-    process_segments(segments[1:], data_type)
+    process_segments(segments, data_type)
     print >> sys.stderr, 'Number of segments:', len(segments)
 
 
