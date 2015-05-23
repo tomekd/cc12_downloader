@@ -87,7 +87,7 @@ def parse_segment(segment, data_type):
     input_queue = feed_queue(stats, data_type, get_downloaded_files(segment))
 
     processes = [mp.Process(target=download_files,
-                            args=(segment, input_queue,)) for i in range(6)]
+                            args=(segment, input_queue,)) for i in range(4)]
     for p in processes:
         p.start()
 
@@ -120,9 +120,10 @@ def process_segments(segments, data_type):
 
 def main():
     """ main """
+    parser = argparse.ArgumentError
     segments = get_segments()
     data_type = ['textdata']
-    process_segments(segments[:1], data_type)
+    process_segments(segments[1:], data_type)
     print >> sys.stderr, 'Number of segments:', len(segments)
 
 
