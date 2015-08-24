@@ -44,7 +44,7 @@ def main():
 
             reader.close()
         except Exception:
-            print >> sys.stderr, text_file
+            print >> sys.stderr,'Parsing failed: ' text_file
 
 if __name__ == '__main__':
     main()
