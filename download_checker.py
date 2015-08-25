@@ -39,8 +39,7 @@ def get_downloaded_filenames(segment):
     return glob.glob("./{}/textData*".format(segment))
 
 
-def main():
-    segment = sys.argv[1]
+def check_segment(segment):
     print "SEGMENT:", segment
     cc = get_cc_filenames(segment)['textdata']
     fs = get_downloaded_filenames(segment)
@@ -50,6 +49,12 @@ def main():
         print "DOWNLOADED CORRECTLY."
         with open('{}/{}.DOWNLOADED'.format(segment, segment), 'w') as _file:
             _file.write(str(len(cc)) + '\n')
+
+
+def main():
+    segments = sys.argv[1:]
+    for segment in segments:
+        check_segment(segment)
 
 
 if __name__ == '__main__':
