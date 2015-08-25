@@ -41,6 +41,9 @@ def get_downloaded_filenames(segment):
 
 def check_segment(segment):
     print "SEGMENT:", segment
+    if len(glob.glob('{}/{}.DOWNLOADED'.format(segment, segment))):
+        print "DONE PREVIOUSLY"
+        return "OK"
     cc = get_cc_filenames(segment)['textdata']
     fs = get_downloaded_filenames(segment)
     print "CC:", len(cc)
